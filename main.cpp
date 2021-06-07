@@ -11,9 +11,7 @@ rainbow::vision::CamManager cm;
 int main(){
     cout<<"Version: "<< CV_VERSION<<endl;
     if(cm.Open()){
-        while(1){
-            cm.Run();
-        }
+        cm.Run();
     }
     return 0;
 }
