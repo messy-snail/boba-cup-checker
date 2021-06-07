@@ -10,7 +10,7 @@ class camera_manager:
         if not self.cap.isOpened():
             print('fail')
 
-    def Run(self):
+    def Run(self, id):
         while True:
             _, frame = self.cap.read()
             cv2.imshow('test', frame)
