@@ -8,6 +8,10 @@ class camera_manager:
 
     def Open(self):
         self.cap = cv2.VideoCapture(0)
+        self.cap.set(cv2.CAP_PROP_AUTO_WB, 0)
+        self.cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
+        # self.cap.set(cv2.CAP_PROP_AUTO_FOCUS, 0)
+
         if not self.cap.isOpened():
             print('fail')
 
@@ -15,7 +19,7 @@ class camera_manager:
         while True:
             _, self.frame = self.cap.read()
 
-            self.cf.is_cup(self.frame, viz, write)
+            # self.cf.is_cup(self.frame, viz, write)
             if viz:
                 cv2.imshow('boba', self.frame)
             key = cv2.waitKey(60)
