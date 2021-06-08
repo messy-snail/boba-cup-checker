@@ -1,8 +1,9 @@
 import cv2
-import color_finder as cf
+import color_finder
 
 class camera_manager:
     def __init__(self) -> None:
+        self.cf = color_finder.color_finder()
         pass
 
     def Open(self):
@@ -14,7 +15,7 @@ class camera_manager:
         while True:
             _, self.frame = self.cap.read()
 
-            cf.is_cup(self.frame, viz, write)
+            self.cf.is_cup(self.frame, viz, write)
             if viz:
                 cv2.imshow('boba', self.frame)
             key = cv2.waitKey(60)

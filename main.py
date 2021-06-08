@@ -1,5 +1,7 @@
-import camera_manager 
-import color_finder as cf
+# -*- coding: utf-8 -*-
+
+import camera_manager
+import color_finder
 from _thread import *
 import socket
 import sys
@@ -17,19 +19,19 @@ to_client_socket = None
 addr = None
 
 cm  = camera_manager.camera_manager()
+cf = color_finder.color_finder()
 
 def response(data):
-        # 메시지 복호
-        msg = data.decode()
+    #decode
+    msg = data.decode()
 
-        msg_list = msg.split(':')
-        print(msg_list[0])
+    msg_list = msg.split(':')
+    print(msg_list[0])
 
-        # 수신 받은 데이터 포즈 정보일 때 처리
-        if msg=='iscup':
-            result = cf.is_cup(cm.frame, VIZ, WRITE)
-            print(result)
-            to_client_socket.send(result.encode("utf-8"))
+    if msg=='iscup':
+        result = cf.is_cup(cm.frame, VIZ, WRITE)
+        print(result)
+        to_client_socket.send(result.encode("utf-8"))
 
 def thread_server(id):
     print('start')

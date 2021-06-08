@@ -15,10 +15,11 @@ class color_finder:
         colorized_sat = cv2.applyColorMap(normalized_sat, cv2.COLORMAP_JET)
         colorized_val = cv2.applyColorMap(normalized_val, cv2.COLORMAP_JET)
 
+        if viz:
 
-        cv2.imshow('hue', colorized_hue)
-        cv2.imshow('sat', colorized_sat)
-        cv2.imshow('val', colorized_val)
+            cv2.imshow('hue', cv2.resize(colorized_hue, dsize=(320, 240), interpolation=cv2.INTER_AREA))
+            cv2.imshow('sat', cv2.resize(colorized_sat, dsize=(320, 240), interpolation=cv2.INTER_AREA))
+            cv2.imshow('val', cv2.resize(colorized_val, dsize=(320, 240), interpolation=cv2.INTER_AREA))
 
         if write:
             cv2.imwrite('hue.png', colorized_hue)

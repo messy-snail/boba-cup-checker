@@ -1,5 +1,4 @@
 build
 CMakeLists.txt.user
-*.png
 .idea
 __pycache__
