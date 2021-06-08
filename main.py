@@ -71,7 +71,7 @@ def thread_server(id):
             server_socket.listen()
             to_client_socket, addr = server_socket.accept()
             thread_status = 2
-            con_msg = f'[연결] {addr[0]}:{addr[1]}'
+            con_msg = '[연결] {}:{}'.format(addr[0], addr[1])
             print(con_msg)
         elif thread_status==2:
 
@@ -92,7 +92,7 @@ def thread_server(id):
                 response(data)
 
             except ConnectionResetError as e:
-                exception_msg = f'[끊김] {addr[0]}:{addr[1]}'
+                exception_msg = '[끊김] {}:{}'.format(addr[0], addr[1])
                 print(exception_msg)
                 break
     print('socket bye')
@@ -122,8 +122,9 @@ def main(argv):
         if opt in ("-h", "--help"): # HELP 요청인 경우 사용법 출력
             print(FILE_NAME, '-i <ip> -p <port>, -v <viz> -w <write> -d <delay> -c <bin counter> -t <threshold value> -o <open iteration>')
             print('설정값은 다음과 같다')
-            print(f'ip={HOST}, port={PORT}, viz={VIZ}, write={WRITE}, delay time={DELAY_TIME}')
-            print(f'bin counter={BIN_COUNTER}, threshold value={THRESHOLD_VAL}, open iteration={OPEN_ITER}')
+            # print(f'ip={HOST}, port={PORT}, viz={VIZ}, write={WRITE}, delay time={DELAY_TIME}')
+            print('ip={}, port={}, viz={}, write={}, delay time={}').format(HOST, PORT, VIZ, WRITE, DELAY_TIME)
+            print('bin counter={}, threshold value={}, open iteration={}').format(BIN_COUNTER,THRESHOLD_VAL, OPEN_ITER)
             sys.exit()
 
         elif opt in ("-i", "--ip"): # IP 입력인 경우
