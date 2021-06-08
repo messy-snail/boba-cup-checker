@@ -12,7 +12,7 @@ from time import sleep
 
 HOST = '127.0.0.1'
 PORT = 7777
-VIZ = True
+VIZ = False
 WRITE = False
 DEBUG = False
 DELAY_TIME = 1.5

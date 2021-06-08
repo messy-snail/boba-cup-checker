@@ -37,9 +37,9 @@ class color_finder:
             colorized_hue = cv2.applyColorMap(input_hsv_channels[0], cv2.COLORMAP_JET)
             colorized_sat = cv2.applyColorMap(input_hsv_channels[1], cv2.COLORMAP_JET)
             colorized_val = cv2.applyColorMap(input_hsv_channels[2], cv2.COLORMAP_JET)
-            cv2.imshow('hue', cv2.resize(colorized_hue, dsize=(320, 240), interpolation=cv2.INTER_AREA))
-            cv2.imshow('sat', cv2.resize(colorized_sat, dsize=(320, 240), interpolation=cv2.INTER_AREA))
-            cv2.imshow('val', cv2.resize(colorized_val, dsize=(320, 240), interpolation=cv2.INTER_AREA))
+            # cv2.imshow('hue', cv2.resize(colorized_hue, dsize=(320, 240), interpolation=cv2.INTER_AREA))
+            # cv2.imshow('sat', cv2.resize(colorized_sat, dsize=(320, 240), interpolation=cv2.INTER_AREA))
+            # cv2.imshow('val', cv2.resize(colorized_val, dsize=(320, 240), interpolation=cv2.INTER_AREA))
 
         if write:
             if viz:
