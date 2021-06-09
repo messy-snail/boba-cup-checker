@@ -44,19 +44,20 @@ def response(data):
     msg_list = msg.split(' ')
     print(msg_list[0])
 
-    if msg_list[0]=='load':
+    if msg_list[0]=='init':
         cf.reference =copy.deepcopy(cm.frame)
         cv2.imwrite('reference.png', cf.reference)
         print('save the reference')
 
-    elif msg_list[0]=='open':
+    elif msg_list[0]=='stat':
         while True:
             result = cf.is_cup(cm.frame)
             print(result)
+            to_client_socket.send(result.encode("utf-8"))
             if result=='nocup':
                 break
-        sleep(DELAY_TIME)
-        to_client_socket.send(result.encode("utf-8"))
+        # sleep(DELAY_TIME)
+        # to_client_socket.send(result.encode("utf-8"))
     elif msg_list[0]=='set':
         arg_num =0
         response_string = 'success'
