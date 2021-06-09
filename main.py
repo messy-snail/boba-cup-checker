@@ -7,6 +7,7 @@ import socket
 import sys
 import getopt
 import copy
+import cv2
 from time import sleep
 
 VERSION = '1.0'
@@ -45,6 +46,7 @@ def response(data):
 
     if msg_list[0]=='load':
         cf.reference =copy.deepcopy(cm.frame)
+        cv2.imwrite('reference.png', cf.reference)
         print('save the reference')
 
     elif msg_list[0]=='open':

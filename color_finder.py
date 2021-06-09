@@ -15,6 +15,7 @@ class color_finder:
         input_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         input_hsv_channels = cv2.split(input_hsv)
 
+        self.reference = cv2.imread('reference.png')
         reference_hsv = cv2.cvtColor(self.reference, cv2.COLOR_BGR2HSV)
         reference_hsv_channels = cv2.split(reference_hsv)
 
