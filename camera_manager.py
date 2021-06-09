@@ -7,6 +7,10 @@ class camera_manager:
         self.cf = color_finder.color_finder()
         self.viz = False
         self.write = False
+        self.left = 0
+        self.right = 640
+        self.top = 0
+        self.bot = 480
         pass
 
     def Open(self):
@@ -28,9 +32,11 @@ class camera_manager:
     def Run(self):
         while True:
             ret, self.frame = self.cap.read()
+
             if ret == False:
                 print('cam read error1')
                 break
+            self.frame = self.frame[self.top:self.bot, self.left:self.right]
             number = cv2.countNonZero(self.frame[:,:,0])
             if number ==0:
                 print('cam read error2')

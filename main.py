@@ -10,7 +10,7 @@ import copy
 import cv2
 from time import sleep
 
-VERSION = '1.0'
+VERSION = '1.2'
 
 HOST = '127.0.0.1'
 PORT = 7777
@@ -20,8 +20,13 @@ DEBUG = False
 DELAY_TIME = 1.5
 
 THRESHOLD_VAL = 30
-BIN_COUNTER = 100
+BIN_COUNTER = 200
 OPEN_ITER = 2
+
+LEFT = 0
+RIGHT = 640
+TOP = 0
+BOT = 480
 
 thread_status = None
 server_socket = None
@@ -39,6 +44,12 @@ def response(data):
     global BIN_COUNTER
     global THRESHOLD_VAL
     global OPEN_ITER
+
+    global LEFT
+    global RIGHT
+    global TOP
+    global BOT
+
     msg = data.decode()
 
     msg_list = msg.split(' ')
@@ -125,7 +136,7 @@ def response(data):
                     to_client_socket.send(response_string.encode("utf-8"))
                     print(response_string)
                     return
-            if msg_list[idx] == '-t' or msg_list[idx] == '--threshold':
+            if msg_list[idx] == '-q' or msg_list[idx] == '--threshold':
                 try:
                     if int(msg_list[idx+1])>0 and int(msg_list[idx+1])<255:
                         THRESHOLD_VAL = int(msg_list[idx+1])
@@ -154,6 +165,63 @@ def response(data):
                     to_client_socket.send(response_string.encode("utf-8"))
                     print(response_string)
                     return
+            if msg_list[idx] == '-l' or msg_list[idx] == '--left':
+                try:
+                    if int(msg_list[idx+1])>=0 and int(msg_list[idx+1])<640:
+                        LEFT  = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,left'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,left'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return    
+            if msg_list[idx] == '-r' or msg_list[idx] == '--right':
+                try:
+                    if int(msg_list[idx+1])>=0 and int(msg_list[idx+1])<640:
+                        RIGHT  = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,right'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,right'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+            if msg_list[idx] == '-t' or msg_list[idx] == '--top':
+                try:
+                    if int(msg_list[idx+1])>=0 and int(msg_list[idx+1])<480:
+                        TOP  = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,top'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,top'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+            if msg_list[idx] == '-b' or msg_list[idx] == '--bot':
+                try:
+                    if int(msg_list[idx+1])>=0 and int(msg_list[idx+1])<480:
+                        BOT  = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,bot'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,bot'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return                    
+
         if (len(msg_list)-1) == arg_num*2:
             response_string = 'success'
         else:
@@ -166,6 +234,8 @@ def response(data):
         cf.threshold_val = THRESHOLD_VAL
         cf.bin_counter = BIN_COUNTER
         cf.open_iteration = OPEN_ITER
+
+        
 
         to_client_socket.send(response_string.encode("utf-8"))
         print(response_string)
@@ -227,24 +297,31 @@ def main(argv):
     global BIN_COUNTER
     global THRESHOLD_VAL
     global OPEN_ITER
+    global LEFT
+    global RIGHT
+    global TOP
+    global BOT
     try:
         # opts: getopt 옵션에 따라 파싱 ex) [('-i', 'myinstancce1')]
         # etc_args: getopt 옵션 이외에 입력된 일반 Argument
         # argv 첫번째(index:0)는 파일명, 두번째(index:1)부터 Arguments
         opts, etc_args = getopt.getopt(argv[1:], \
-                                 "hi:p:v:w:d:c:t:o:", ["help","ip=","port=","viz=","write=","delay=","counter=","threshold=","open="])
+                                 "hi:p:v:w:d:c:q:o:l:r:t:b:", ["help","ip=","port=","viz=","write=","delay=",
+                                 "counter=","threshold=","open=",
+                                 "left=","right=","top=","bot="])
 
     except getopt.GetoptError: # 옵션지정이 올바르지 않은 경우
-        print(FILE_NAME, '-i <ip> -p <port>, -v <viz> -w <write> -d <delay> -c <bin counter> -t <threshold value> -o <open iteration>')
+        print(FILE_NAME, '-i <ip> -p <port>, -v <viz> -w <write> -d <delay> -c <bin counter> -q <threshold value> -o <open iteration> -l <left> -r <right> -t <top> -b <bot>')
         sys.exit(2)
 
     for opt, arg in opts: # 옵션이 파싱된 경우
         if opt in ("-h", "--help"): # HELP 요청인 경우 사용법 출력
-            print(FILE_NAME, '-i <ip> -p <port>, -v <viz> -w <write> -d <delay> -c <bin counter> -t <threshold value> -o <open iteration>')
+            print(FILE_NAME, '-i <ip> -p <port>, -v <viz> -w <write> -d <delay> -c <bin counter> -q <threshold value> -o <open iteration> -l <left> -r <right> -t <top> -b <bot>')
             print('설정값은 다음과 같다')
             # print(f'ip={HOST}, port={PORT}, viz={VIZ}, write={WRITE}, delay time={DELAY_TIME}')
             print('ip={}, port={}, viz={}, write={}, delay time={}').format(HOST, PORT, VIZ, WRITE, DELAY_TIME)
             print('bin counter={}, threshold value={}, open iteration={}').format(BIN_COUNTER,THRESHOLD_VAL, OPEN_ITER)
+            print('left={}, right={}, top={}, bot={}').format(LEFT, RIGHT, TOP, BOT)
             sys.exit()
 
         elif opt in ("-i", "--ip"): # IP 입력인 경우
@@ -292,6 +369,30 @@ def main(argv):
             else:
                 print('적정 범위를 벗어납니다(0 ~ 5). Valid range(0 ~ 5)')
                 sys.exit()
+        elif opt in ("-l", "--left"): # LEFT 입력인 경우
+            if int(arg)>=0 and int(arg)<640:
+                LEFT = int(arg)
+            else:
+                print('적정 범위를 벗어납니다(0~640). Valid range(0 ~ 640)')
+                sys.exit()       
+        elif opt in ("-r", "--right"): # RIGHT 입력인 경우
+            if int(arg)>=0 and int(arg)<640:
+                RIGHT = int(arg)
+            else:
+                print('적정 범위를 벗어납니다(0~640). Valid range(0 ~ 640)')
+                sys.exit()    
+        elif opt in ("-t", "--top"): # TOP 입력인 경우
+            if int(arg)>=0 and int(arg)<480:
+                TOP = int(arg)
+            else:
+                print('적정 범위를 벗어납니다(0~480). Valid range(0 ~ 480)')
+                sys.exit()     
+        elif opt in ("-b", "--bot"): # BOT 입력인 경우
+            if int(arg)>=0 and int(arg)<480:
+                BOT = int(arg)
+            else:
+                print('적정 범위를 벗어납니다(0~480). Valid range(0 ~ 480)')
+                sys.exit()                                                         
 
     cm.viz = VIZ
     cm.write = WRITE
@@ -300,6 +401,11 @@ def main(argv):
     cf.threshold_val = THRESHOLD_VAL
     cf.bin_counter = BIN_COUNTER
     cf.open_iteration = OPEN_ITER
+
+    cm.left = LEFT
+    cm.right = RIGHT
+    cm.top = TOP
+    cm.bot = BOT
 
     print("IP:", HOST)
     print("PORT:",  PORT)
