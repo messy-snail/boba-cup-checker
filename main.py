@@ -9,6 +9,7 @@ import getopt
 import copy
 from time import sleep
 
+VERSION = '1.0'
 
 HOST = '127.0.0.1'
 PORT = 7777
@@ -309,7 +310,9 @@ def main(argv):
 
 # module이 아닌 main으로 실행된 경우 실행된다
 if __name__ == "__main__":
+    print('Version:', VERSION)
     main(sys.argv)
+
     start_new_thread(thread_server,(0,))
 
     if cm.Open()==False:
