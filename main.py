@@ -32,23 +32,139 @@ cf = color_finder.color_finder()
 def response(data):
     #decode
     global DELAY_TIME
+    global VIZ
+    global WRITE
+    global BIN_COUNTER
+    global THRESHOLD_VAL
+    global OPEN_ITER
     msg = data.decode()
 
-    msg_list = msg.split(':')
+    msg_list = msg.split(' ')
     print(msg_list[0])
 
-    if msg=='load':
+    if msg_list[0]=='load':
         cf.reference =copy.deepcopy(cm.frame)
         print('save the reference')
 
-    elif msg=='open':
+    elif msg_list[0]=='open':
         while True:
-            result = cf.is_cup(cm.frame, VIZ, WRITE)
+            result = cf.is_cup(cm.frame)
             print(result)
             if result=='nocup':
                 break
         sleep(DELAY_TIME)
         to_client_socket.send(result.encode("utf-8"))
+    elif msg_list[0]=='set':
+        arg_num =0
+        response_string = 'success'
+        for idx in range(1, len(msg_list)):
+            if msg_list[idx] == '-v' or msg_list[idx] == '--viz':
+                try:
+                    if msg_list[idx+1] == 'True':
+                        VIZ = True
+                        arg_num += 1
+                    elif msg_list[idx+1] == 'False':
+                        VIZ = False
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,viz'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,viz'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+            if msg_list[idx] == '-w' or msg_list[idx] == '--write':
+                try:
+                    if msg_list[idx+1] == 'True':
+                        WRITE = True
+                        arg_num += 1
+                    elif msg_list[idx+1] == 'False':
+                        WRITE = False
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,write'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,write'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+            if msg_list[idx] == '-d' or msg_list[idx] == '--delay':
+                try:
+                    if float(msg_list[idx+1])>0 and float(msg_list[idx+1])<5.0 :
+                        DELAY_TIME = float(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,delay'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,delay'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+
+            if msg_list[idx] == '-c' or msg_list[idx] == '--counter':
+                try:
+                    if int(msg_list[idx+1])>9 and int(msg_list[idx+1])<245761:
+                        BIN_COUNTER = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,counter'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,counter'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+            if msg_list[idx] == '-t' or msg_list[idx] == '--threshold':
+                try:
+                    if int(msg_list[idx+1])>0 and int(msg_list[idx+1])<255:
+                        THRESHOLD_VAL = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,threshold'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,threshold'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+
+            if msg_list[idx] == '-o' or msg_list[idx] == '--open':
+                try:
+                    if int(msg_list[idx+1])>0 and int(msg_list[idx+1])<6:
+                        OPEN_ITER  = int(msg_list[idx+1])
+                        arg_num += 1
+                    else:
+                        response_string = 'fail,open'
+                        to_client_socket.send(response_string.encode("utf-8"))
+                        return
+                except:
+                    response_string = 'fail,open'
+                    to_client_socket.send(response_string.encode("utf-8"))
+                    print(response_string)
+                    return
+        if (len(msg_list)-1) == arg_num*2:
+            response_string = 'success'
+        else:
+            response_string = 'fail,args'
+
+        cm.viz = VIZ
+        cm.write = WRITE
+        cf.viz = VIZ
+        cf.write = WRITE
+        cf.threshold_val = THRESHOLD_VAL
+        cf.bin_counter = BIN_COUNTER
+        cf.open_iteration = OPEN_ITER
+
+        to_client_socket.send(response_string.encode("utf-8"))
+        print(response_string)
 
 def thread_server(id):
     global server_socket
@@ -132,14 +248,18 @@ def main(argv):
         elif opt in ("-p", "--port"): # PORT 입력인 경우
             PORT = arg
         elif opt in ("-v", "--viz"): # VIZ 입력인 경우
-            if arg == 'True' or arg == 'False':
-                VIZ = arg
+            if arg == 'True':
+                VIZ = True
+            elif arg=='False':
+                VIZ = False
             else:
                 print('True 또는 False를 입력하세요. True or False')
                 sys.exit()
         elif opt in ("-w", "--write"):  # WRITE 입력인 경우
-            if arg=='True' or arg=='False':
-                WRITE = arg
+            if arg == 'True':
+                WRITE = True
+            elif arg=='False':
+                WRITE = False
             else:
                 print('True 또는 False를 입력하세요. True or False')
                 sys.exit()
@@ -169,6 +289,10 @@ def main(argv):
                 print('적정 범위를 벗어납니다(0 ~ 5). Valid range(0 ~ 5)')
                 sys.exit()
 
+    cm.viz = VIZ
+    cm.write = WRITE
+    cf.viz = VIZ
+    cf.write = WRITE
     cf.threshold_val = THRESHOLD_VAL
     cf.bin_counter = BIN_COUNTER
     cf.open_iteration = OPEN_ITER
@@ -188,6 +312,11 @@ if __name__ == "__main__":
     main(sys.argv)
     start_new_thread(thread_server,(0,))
 
-    cm.Open()
-    cm.Run(VIZ, WRITE)
+    if cm.Open()==False:
+        print('check cam')
+    if cm.Run() == False:
+        print('check cam')
+    else:
+        print('good bye')
+    sys.exit()
 
