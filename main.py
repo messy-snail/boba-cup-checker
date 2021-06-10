@@ -28,6 +28,8 @@ RIGHT = 640
 TOP = 0
 BOT = 480
 
+STOP_FLAG = False
+
 thread_status = None
 server_socket = None
 to_client_socket = None
@@ -50,6 +52,7 @@ def response(data):
     global TOP
     global BOT
 
+    global STOP_FLAG
     msg = data.decode()
 
     msg_list = msg.split(' ')
@@ -65,10 +68,13 @@ def response(data):
             result = cf.is_cup(cm.frame)
             print(result)
             to_client_socket.send(result.encode("utf-8"))
-            if result=='nocup':
+            if STOP_FLAG == True:
+                STOP_FLAG = False
                 break
         # sleep(DELAY_TIME)
         # to_client_socket.send(result.encode("utf-8"))
+    elif msg_list[0]=='stop':
+        STOP_FLAG = True
     elif msg_list[0]=='set':
         arg_num =0
         response_string = 'success'
