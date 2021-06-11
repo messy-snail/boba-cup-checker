@@ -10,7 +10,7 @@ import copy
 import cv2
 from time import sleep
 
-VERSION = '1.2'
+VERSION = '1.3'
 
 HOST = '127.0.0.1'
 PORT = 7777
@@ -64,13 +64,8 @@ def response(data):
         print('save the reference')
 
     elif msg_list[0]=='stat':
-        while True:
-            result = cf.is_cup(cm.frame)
-            print(result)
-            to_client_socket.send(result.encode("utf-8"))
-            if STOP_FLAG == True:
-                STOP_FLAG = False
-                break
+        start_new_thread(thread_send,(1,))
+        
         # sleep(DELAY_TIME)
         # to_client_socket.send(result.encode("utf-8"))
     elif msg_list[0]=='stop':
@@ -241,8 +236,6 @@ def response(data):
         cf.bin_counter = BIN_COUNTER
         cf.open_iteration = OPEN_ITER
 
-        
-
         to_client_socket.send(response_string.encode("utf-8"))
         print(response_string)
 
@@ -293,6 +286,20 @@ def thread_server(id):
                 break
     print('socket bye')
            
+def thread_send(id):
+    global STOP_FLAG
+    global to_client_socket
+    while True:
+        result = cf.is_cup(cm.frame)
+        print(result)
+        to_client_socket.send(result.encode("utf-8"))
+        if STOP_FLAG == True:
+            STOP_FLAG = False
+            break
+
+    # while STOP_FLAG==False:
+    #     to_client_socket.send(result.encode("utf-8"))
+
 def main(argv):
     FILE_NAME     = argv[0] # command line arguments의 첫번째는 파일명
     global HOST
